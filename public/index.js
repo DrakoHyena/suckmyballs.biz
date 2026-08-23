@@ -4,7 +4,7 @@ const balls = [
         desc: "A light and squishy foam ball with a Cosmic design. Excellent condition.",
         price: "$20.00",
         size: 100,
-        img: "./cosmicball.png"
+        img: "/assets/cosmicball.png"
     }
 ];
 
@@ -19,14 +19,13 @@ const ctx = canvas.getContext("2d");
 
 // --- Device Orientation & Gravity Setup ---
 let gravityX = 0;
-let gravityY = 0.01; // default downward gravity when flat/unsupported
+let gravityY = 0.1; // default downward gravity when flat/unsupported
 
 function handleOrientation(event) {
     // gamma: left-to-right tilt in degrees [-90, 90]
     // beta: front-to-back tilt in degrees [-180, 180]
     const gamma = event.gamma || 0;
-    const beta = event.beta || 0;
-
+    const beta = event.beta || 90;
     // Scale down values to control gravity strength
     const SENSITIVITY = 0.01;
     gravityX = gamma * SENSITIVITY;
