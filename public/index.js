@@ -3,7 +3,7 @@ const balls = [
         name: "Cosmic Stress Ball",
         desc: "A light and squishy foam ball with a Cosmic design. Excellent condition.",
         price: "$20.00",
-        size: 100,
+        size: 80,
         img: "/assets/cosmicball.png"
     }
 ];
@@ -19,7 +19,7 @@ const ctx = canvas.getContext("2d");
 
 // --- Device Orientation & Gravity Setup ---
 let gravityX = 0;
-let gravityY = 0.1; // default downward gravity when flat/unsupported
+let gravityY = 0.3; // default downward gravity when flat/unsupported
 
 function handleOrientation(event) {
     // gamma: left-to-right tilt in degrees [-90, 90]
@@ -68,6 +68,8 @@ function spawnBalls() {
         });
     }
 }
+for (let i = 0; i < 5; i++) spawnBalls();
+
 
 const popUpMenu = document.getElementById("popupMenu");
 const popUpImage = document.getElementById("popupImg");
@@ -76,25 +78,50 @@ const popUpDesc = document.getElementById("popupDesc");
 const popUpPrice = document.getElementById("popupPrice");
 
 function showPurchase(ball) {
-    popUpMenu.style.top = "5%";
+    popUpMenu.style.top = "50%";
     popUpImage.src = ball.data.img.src;
     popUpTitle.innerText = ball.data.name;
     popUpDesc.innerText = ball.data.desc;
     popUpPrice.innerText = ball.data.price;
 }
 
-document.addEventListener("mousedown", (e) => {
+window.addEventListener("pointerdown", (e) => {
+    // 1. Ignore clicks if the user tapped on the shop button or inside the popup menu
+    if (e.target.closest("#shopBtn, #popupMenu")) {
+        return;
+    }
+
     const rect = canvas.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
+
+    // 2. Ignore clicks that happen outside the canvas boundary
+    if (
+        e.clientX < rect.left ||
+        e.clientX > rect.right ||
+        e.clientY < rect.top ||
+        e.clientY > rect.bottom
+    ) {
+        return;
+    }
+
+    // 3. Convert client CSS coordinates to internal canvas coordinates
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    const clickX = (e.clientX - rect.left) * scaleX;
+    const clickY = (e.clientY - rect.top) * scaleY;
+
+    // 4. Hit detection with a small forgiveness buffer for moving targets
+    const HIT_BUFFER = 8;
+
     for (let i = activeBalls.length - 1; i >= 0; i--) {
         const ball = activeBalls[i];
-        const dx = mouseX - ball.x;
-        const dy = mouseY - ball.y;
-        const radius = ball.data.size / 2;
+        const dx = clickX - ball.x;
+        const dy = clickY - ball.y;
+        const radius = (ball.data.size / 2) + HIT_BUFFER;
+
         if (dx * dx + dy * dy <= radius * radius) {
             showPurchase(ball);
-            break;
+            break; // Open purchase for the topmost ball only
         }
     }
 });
@@ -109,15 +136,25 @@ resize();
 const FORCE_DAMP = 2;
 const COLLISION_CHECKS = 10;
 
+const grad = ctx.createLinearGradient(0, 0, 0, 5);
+grad.addColorStop(0, "red");
+grad.addColorStop(0.3, "red");
+grad.addColorStop(0.5, "deeppink");
+grad.addColorStop(0.7, "red");
+grad.addColorStop(1, "red");
+
 function draw() {
     requestAnimationFrame(draw);
 
-    ctx.fillStyle = "red";
+    ctx.fillStyle = grad;
+    ctx.save();
+    ctx.scale(canvas.width / 5, canvas.height / 5)
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.restore();
 
     for (let ball of activeBalls) {
         if (ball.alpha < 1) {
-            ball.alpha += 0.05;
+            ball.alpha += 0.025;
         }
 
         // Apply dynamic orientation gravity
