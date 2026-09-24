@@ -1,0 +1,152 @@
+<html>
+
+<head>
+    <meta name="title" content="SUCK MY BALL (DOT) BIZ (SLASH) NEWS">
+    <meta name="description" content="STAY UP TO DATE.">
+    <meta name="keywords" content="article,balls,biz">
+    <meta name="robots" content="index, follow">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="language" content="English">
+
+    <style>
+        /* Work around for marked.js */
+        *:not(#spanContent, #spanContent *) {
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0;
+            z-index: 0;
+        }
+
+        * {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        p {
+            font-size: 1.5vw;
+        }
+
+        h3 {
+            font-size: 2vw;
+        }
+
+        h2 {
+            font-size: 2.5vw;
+        }
+
+        h1 {
+            font-size: 3vw;
+        }
+
+        html body {
+            width: 100%;
+            height: 100%;
+        }
+
+        .containerDiv {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            flex-wrap: nowrap;
+            flex-direction: row;
+            background: darkred;
+        }
+
+        #sidebar {
+            background: red;
+            color: white;
+            height: 100%;
+            width: 20%;
+            word-break: break-all;
+            padding: 1vw;
+            overflow-y: scroll;
+        }
+
+        #sidebar>* {
+            margin-bottom: 1vw;
+        }
+
+        #divContent {
+            margin: 2vw;
+            color: white;
+            height: 50%;
+            width: 100%;
+            width: max-content;
+            overflow-y: scroll;
+            flex: 1;
+            box-shadow: 0px -152px 64px -128px rgba(255, 255, 255, 0.25) inset;
+        }
+
+        #spanContent {
+            margin: auto;
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.js"></script>
+
+    <meta name="google-adsense-account" content="ca-pub-2912509706983872">
+</head>
+
+<body>
+    <div class="containerDiv">
+        <div id="sidebar">
+            Loading articles...
+        </div>
+        <div id="divContent">
+            <button id="fullscreenBtn">View Article In Fullscreen</button>
+            <span style="display:block" id="spanContent">
+                Pick an article to view.
+            </span>
+        </div>
+    </div>
+    <script defer>
+        const sidebar = document.getElementById("sidebar");
+        const content = document.getElementById("spanContent");
+        const fullscreenBtn = document.getElementById("fullscreenBtn");
+
+        marked.use({
+            breaks: true,
+            gfm: true
+        });
+
+        fullscreenBtn.onclick = () => {
+            if (!document.fullscreenElement) {
+                content.requestFullscreen()
+                    .catch((err) => {
+                        console.error(`Error attempting to enable fullscreen: ${err.message}`);
+                    });
+            } else {
+                document.exitFullscreen();
+            }
+        };
+
+
+        fetch("/articleIndex").then(res => res.json()).then((articles) => {
+            articles = articles.reverse();
+            sidebar.innerHTML = "";
+
+            const p = document.createElement("p");
+            p.innerText = "Go Back";
+            p.style.cursor = "pointer";
+            p.onclick = () => {
+                window.location.href = "https://suckmyballs.biz"
+            }
+            sidebar.appendChild(p);
+
+            for (let article of articles) {
+                const p = document.createElement("p");
+                p.innerText = article;
+                p.style.cursor = "pointer";
+                p.onclick = () => {
+                    fetch(`/news-articles/${article}`).then(res => res.text()).then((txt) => {
+                        content.innerHTML = marked.parse(txt);
+                    })
+                }
+                sidebar.appendChild(p);
+            }
+        })
+    </script>
+</body>
+
+</html>

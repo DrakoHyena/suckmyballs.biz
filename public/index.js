@@ -55,6 +55,9 @@ window.addEventListener("touchstart", initOrientation, { once: true });
 const shopButton = document.getElementById("shopBtn");
 shopButton.onclick = () => { for (let i = 0; i < 5; i++) spawnBalls(); };
 
+const closeShopButton = document.getElementById("closeShopButton");
+closeShopButton.onclick = hidePurchase;
+
 const activeBalls = [];
 function spawnBalls() {
     for (let ball of balls) {
@@ -83,6 +86,10 @@ function showPurchase(ball) {
     popUpTitle.innerText = ball.data.name;
     popUpDesc.innerText = ball.data.desc;
     popUpPrice.innerText = ball.data.price;
+}
+
+function hidePurchase() {
+    popUpMenu.style.top = "-50%";
 }
 
 window.addEventListener("pointerdown", (e) => {

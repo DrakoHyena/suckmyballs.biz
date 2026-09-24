@@ -21,7 +21,7 @@ html body {
     height: 5%;
     position: relative;
     top: 5%;
-    background: linear-gradient(90deg, red, red, deeppink, red, red);
+    background: linear-gradient(90deg, red, deeppink, purple, deeppink, red);
 }
 
 .footer>button {
@@ -114,4 +114,14 @@ html body {
     border: yellow solid .75vw;
     background: rgba(255, 255, 255, .25);
     padding: .25vw;
+}
+
+#closeShopButton {
+    border: none;
+    background: yellow;
+    color: deeppink;
+    margin-left: 25%;
+    margin-top: 1vw;
+    padding: 1vw;
+    font-weight: bold;
 }

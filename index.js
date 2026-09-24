@@ -58,6 +58,12 @@ const server = http.createServer(async (req, res) => {
     if (pathname === '/balls' && req.method === 'GET') {
         res.writeHead(200, { 'Content-Type': 'text/html; charset=UTF-8' });
         return res.end("balls");
+    } else if (pathname === "/articleIndex" && req.method === "GET") {
+        res.writeHead(200, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify(fs.readdirSync(`${PUBLIC_DIR}/news-articles/`)))
+    } else if (pathname === "/news" && req.method === "GET") {
+        res.writeHead(200, { "Content-Type": "text/html; charset=UTF-8" });
+        return res.end(fs.readFileSync(`${PUBLIC_DIR}/articleViewer.html`));
     }
 
     // ==========================================
