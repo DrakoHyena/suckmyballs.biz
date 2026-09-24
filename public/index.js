@@ -55,6 +55,9 @@ window.addEventListener("touchstart", initOrientation, { once: true });
 const shopButton = document.getElementById("shopBtn");
 shopButton.onclick = () => { for (let i = 0; i < 5; i++) spawnBalls(); };
 
+const newsButton = document.getElementById("newsBtn");
+newsButton.onclick = () => window.location.pathname = "/news"
+
 const closeShopButton = document.getElementById("closeShopButton");
 closeShopButton.onclick = hidePurchase;
 
