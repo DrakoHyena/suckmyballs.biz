@@ -1,0 +1,109 @@
+<html>
+
+<head>
+    <meta name="title" content="SUCK MY BALL (DOT) BIZ (SLASH) NEWS">
+    <meta name="description" content="THE REALEST SHIT YOU'LL EVER HEAR.">
+    <meta name="keywords" content="news,balls,biz">
+    <meta name="robots" content="index, follow">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="language" content="English">
+
+
+    <style>
+        * {
+            font-family: Arial, Helvetica, sans-serif;
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0;
+            z-index: 0;
+        }
+
+        h4 {
+            font-size: 0.85em;
+        }
+
+        h3 {
+            font-size: 0.95em;
+        }
+
+        h2 {
+            font-size: .8em;
+            margin-bottom: .5em;
+        }
+
+        h1 {
+            font-size: 2em;
+        }
+
+
+
+        #mainContainer {
+            display: flex;
+            width: 100%;
+            min-height: 100%;
+            background: black;
+            overflow-y: auto;
+        }
+
+        #mainContainer>div {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+            border: solid;
+            border-width: 2px;
+            width: 100%;
+            height: min-content;
+            padding: 1em;
+            margin: 1em;
+        }
+
+        #mainContainer>div:hover {
+            color: yellow;
+            border: solid;
+            border-width: 2px;
+            border-color: yellow;
+            box-shadow: 13px 12px 0px -5px yellow;
+
+        }
+    </style>
+</head>
+
+<body>
+    <div id="mainContainer">
+    </div>
+
+    <script>
+        const container = document.getElementById("mainContainer");
+
+        fetch("/articleIndex").then(res => res.json()).then((articles) => {
+
+            for (let article of articles) {
+                const div = document.createElement("div");
+                const title = document.createElement("h1");
+                const desc = document.createElement("h2");
+                const time = document.createElement("h3");
+                const auth = document.createElement("h4");
+
+                title.innerText = article.name;
+                desc.innerText = article.desc;
+                time.innerText = article.date;
+                auth.innerText = article.auth;
+
+                div.appendChild(title);
+                div.appendChild(desc);
+                div.appendChild(time);
+                div.appendChild(auth);
+                div.onclick = function () {
+                    window.location.href = `/article-viewer?v=${article.fileName}`
+                }
+
+                container.appendChild(div)
+            }
+        })
+
+    </script>
+
+</body>
+
+</html>

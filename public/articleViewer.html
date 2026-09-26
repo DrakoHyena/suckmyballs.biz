@@ -1,8 +1,8 @@
 <html>
 
 <head>
-    <meta name="title" content="SUCK MY BALL (DOT) BIZ (SLASH) NEWS">
-    <meta name="description" content="STAY UP TO DATE.">
+    <meta name="title" content="SUCK MY BALL (DOT) BIZ (SLASH) ARTICLE - VIEWER">
+    <meta name="description" content="READ IT.">
     <meta name="keywords" content="article,balls,biz">
     <meta name="robots" content="index, follow">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -22,49 +22,34 @@
         }
 
         p {
-            font-size: 1.5vw;
+            font-size: 1.5em;
         }
 
         h3 {
-            font-size: 2vw;
+            font-size: 2em;
         }
 
         h2 {
-            font-size: 2.5vw;
+            font-size: 2.5em;
         }
 
         h1 {
-            font-size: 3vw;
+            font-size: 3em;
         }
 
         html body {
             width: 100%;
-            height: 100%;
         }
 
         .containerDiv {
             width: 100%;
-            height: 100%;
+            min-height: 100%;
             display: flex;
             justify-content: flex-start;
             align-items: flex-start;
             flex-wrap: nowrap;
-            flex-direction: row;
-            background: darkred;
-        }
-
-        #sidebar {
-            background: red;
-            color: white;
-            height: 100%;
-            width: 20%;
-            word-break: break-all;
-            padding: 1vw;
-            overflow-y: scroll;
-        }
-
-        #sidebar>* {
-            margin-bottom: 1vw;
+            flex-direction: column;
+            background: black;
         }
 
         #divContent {
@@ -72,14 +57,33 @@
             color: white;
             height: 50%;
             width: 100%;
-            width: max-content;
             overflow-y: scroll;
-            flex: 1;
-            box-shadow: 0px -152px 64px -128px rgba(255, 255, 255, 0.25) inset;
         }
 
         #spanContent {
+            color: white;
             margin: auto;
+            padding: 2em;
+        }
+
+        #header {
+            width: 100%;
+            padding: 1em;
+            display: flex;
+            justify-content: space-evenly;
+        }
+
+        #header>button {
+            border: 2px yellow solid;
+            background: black;
+            padding: 1em;
+            color: yellow;
+            font-weight: bolder;
+        }
+
+        #header>button:hover {
+            background: yellow;
+            color: black;
         }
     </style>
 
@@ -90,26 +94,28 @@
 
 <body>
     <div class="containerDiv">
-        <div id="sidebar">
-            Loading articles...
-        </div>
-        <div id="divContent">
+        <div id="header">
+            <button id="backButton">Back</button>
             <button id="fullscreenBtn">View Article In Fullscreen</button>
-            <span style="display:block" id="spanContent">
-                Pick an article to view.
-            </span>
-        </div>
-    </div>
-    <script defer>
-        const sidebar = document.getElementById("sidebar");
-        const content = document.getElementById("spanContent");
-        const fullscreenBtn = document.getElementById("fullscreenBtn");
 
+        </div>
+        <span style="display:block" id="spanContent">
+            Loading article...
+        </span>
+    </div>
+
+    <script defer>
         marked.use({
             breaks: true,
             gfm: true
         });
 
+        const backButton = document.getElementById("backButton");
+        backButton.onclick = () => {
+            window.location.href = "/news"
+        }
+
+        const fullscreenBtn = document.getElementById("fullscreenBtn");
         fullscreenBtn.onclick = () => {
             if (!document.fullscreenElement) {
                 content.requestFullscreen()
@@ -122,30 +128,17 @@
         };
 
 
-        fetch("/articleIndex").then(res => res.json()).then((articles) => {
-            articles = articles.reverse();
-            sidebar.innerHTML = "";
+        const content = document.getElementById("spanContent");
+        const v = (new URLSearchParams(window.location.search)).get("v")
+        if (!v) {
+            content.innerText("Error loading article")
+        } else {
+            fetch(`/news-articles/${v}`).then(res => res.text()).then(txt => content.innerHTML = marked.parse(txt));
+        }
 
-            const p = document.createElement("p");
-            p.innerText = "Go Back";
-            p.style.cursor = "pointer";
-            p.onclick = () => {
-                window.location.href = "https://suckmyballs.biz"
-            }
-            sidebar.appendChild(p);
 
-            for (let article of articles) {
-                const p = document.createElement("p");
-                p.innerText = article;
-                p.style.cursor = "pointer";
-                p.onclick = () => {
-                    fetch(`/news-articles/${article}`).then(res => res.text()).then((txt) => {
-                        content.innerHTML = marked.parse(txt);
-                    })
-                }
-                sidebar.appendChild(p);
-            }
-        })
+
+
     </script>
 </body>
 

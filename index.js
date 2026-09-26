@@ -60,10 +60,29 @@ const server = http.createServer(async (req, res) => {
         return res.end("balls");
     } else if (pathname === "/articleIndex" && req.method === "GET") {
         res.writeHead(200, { "Content-Type": "application/json" });
-        return res.end(JSON.stringify(fs.readdirSync(`${PUBLIC_DIR}/news-articles/`)))
-    } else if (pathname === "/news" && req.method === "GET") {
+
+        const arrOut = [];
+
+        const files = fs.readdirSync(`${PUBLIC_DIR}/news-articles/`)
+        for (let file of files) {
+            let text = fs.readFileSync(`${PUBLIC_DIR}/news-articles/${file}`, "UTF8").replaceAll("#", "").split("\n")
+            const entry = {
+                name: text[0].trim(),
+                desc: text[1].trim(),
+                date: text[2].trim(),
+                auth: text[3].trim(),
+                fileName: file
+            }
+            arrOut.push(entry)
+        }
+
+        return res.end(JSON.stringify(arrOut))
+    } else if (pathname.split("?")[0] === "/article-viewer" && req.method === "GET") {
         res.writeHead(200, { "Content-Type": "text/html; charset=UTF-8" });
         return res.end(fs.readFileSync(`${PUBLIC_DIR}/articleViewer.html`));
+    } else if (pathname === "/news" && req.method === "GET") {
+        res.writeHead(200, { "Content-Type": "text/html; charset=UTF-8" });
+        return res.end(fs.readFileSync(`${PUBLIC_DIR}/news.html`));
     }
 
     // ==========================================
